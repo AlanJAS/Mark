@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   width="55"
+   height="55"
+   id="svg2"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="markoff.svg"
+   viewBox="0 0 51.562499 51.562499">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="744"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="6.0682618"
+     inkscape:cx="15.63717"
+     inkscape:cy="22.063391"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <metadata
+     id="metadata4006">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs5" />
+  <rect
+     width="42.1875"
+     height="42.1875"
+     x="4.6875"
+     y="4.6875"
+     id="rect2990"
+     style="fill:#282828;fill-opacity:1;stroke:none;stroke-width:0.93749994" />
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:2.40301037;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 43.61004,9.86796 26.055395,27.42136 8.5195246,9.888296 V 43.282147 H 41.917159 l -0.02033,-0.02034 h 1.71322 z"
+     id="rect4560-3" />
+  <path
+     style="fill:none;stroke:#ffffff;stroke-width:2.40281248;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 26.055395,27.42136 8.5195246,43.282147"
+     id="path828"
+     inkscape:connector-curvature="0" />
+</svg>
