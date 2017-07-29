@@ -124,7 +124,7 @@ class Mark(Plugin):
         self.tw.lc.def_prim('markTurnMotorB', 1,
             Primitive(self.markTurnMotorB, arg_descs=[ArgSlot(TYPE_INT)]))
 
-        """palette.add_block('markBrakeMotorA',
+        palette.add_block('markBrakeMotorA',
                   style='basic-style',
                   label=_('brake motor A'),
                   help_string=_('Brake motor A'),
@@ -138,7 +138,7 @@ class Mark(Plugin):
                   help_string=_('Brake motor B'),
                   prim_name='markBrakeMotorB')
         self.tw.lc.def_prim('markBrakeMotorB', 0,
-            Primitive(self.markBrakeMotorB))"""
+            Primitive(self.markBrakeMotorB))
 
         palette.add_block('markServo',
                   style='basic-style-2arg',
@@ -158,7 +158,7 @@ class Mark(Plugin):
                   help_string=_('Read gray value from specific port. Value may be between 0 and 100'),
                   prim_name='markGray')
         self.tw.lc.def_prim('markGray', 1,
-            Primitive(self.markGray, TYPE_FLOAT, arg_descs=[ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.markGray, TYPE_NUMBER, arg_descs=[ArgSlot(TYPE_NUMBER)]))
 
         palette.add_block('markDist',
                   style='number-style-1arg',
@@ -167,7 +167,16 @@ class Mark(Plugin):
                   help_string=_('Read distance value from specific port. Value may be between 0 and 100'),
                   prim_name='markDist')
         self.tw.lc.def_prim('markDist', 1,
-            Primitive(self.markDist, TYPE_FLOAT, arg_descs=[ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.markDist, TYPE_NUMBER, arg_descs=[ArgSlot(TYPE_NUMBER)]))
+
+        palette.add_block('markButton',
+                  style='number-style-1arg',
+                  label=[_('mark button')],
+                  default=[1],
+                  help_string=_('Read the button state. When is 1 is pressed, 0 otherwise'),
+                  prim_name='markButton')
+        self.tw.lc.def_prim('markButton', 1,
+            Primitive(self.markButton, TYPE_NUMBER, arg_descs=[ArgSlot(TYPE_NUMBER)]))
 
         palette.add_block('markLED',
                           style='basic-style-2arg',
@@ -190,6 +199,10 @@ class Mark(Plugin):
             except:
                 pass
 
+    def stop(self):
+        self.markTurnMotorA(0)
+        self.markTurnMotorB(0)
+
     ###########################################################################
 
     def _check_init(self):
@@ -204,10 +217,10 @@ class Mark(Plugin):
         self._turn_motor(5, 12, power)
 
     def markBrakeMotorA(self):
-        self._turn_motor(11, 0)
+        self._turn_motor(11, 13, 0)
         
     def markBrakeMotorB(self):
-        self._turn_motor(5, 0)
+        self._turn_motor(5, 12, 0)
 
     def markServo(self, pin, angle):
         self._turn_servo(pin, angle)
@@ -224,10 +237,23 @@ class Mark(Plugin):
             return int(value * 100)
         return value
 
-    def markLED(self, pin, on_off):
-        self.pinMode(pin, _('OUTPUT'))
-        self.digitalWrite(pin, on_off)
+    def markButton(self, pin):
+        """self.pinMode(pin, _('INPUT'))
+        value = self.digitalRead(pin)
+        if not(value == -1):
+            return value
+        return value"""
+        value = self.analogRead(pin)
+        if not(value == -1):
+            return value
+        return value
 
+    def markLED(self, pin, on_off):
+        #self.pinMode(pin, _('OUTPUT'))
+        #self.analogWrite(pin, on_off)
+        pin = int(pin)
+        a = self._marks[self.active_mark]
+        a.digital[pin].write(on_off)
 
 
     def _turn_motor(self, pin_p, pin_s, power):
