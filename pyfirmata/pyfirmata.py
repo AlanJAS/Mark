@@ -350,7 +350,10 @@ class Board(object):
 
     def _handle_sonar_message(self, pin_nr, lsb, msb):
         mask = (msb << 7) + lsb
-        self.sonar[pin_nr].value = mask
+        try:
+            self.sonar[pin_nr].value = mask
+        except IndexError:
+            raise ValueError
 
     def _handle_report_version(self, major, minor):
         self.firmata_version = (major, minor)
