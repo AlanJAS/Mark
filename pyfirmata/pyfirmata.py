@@ -118,7 +118,7 @@ class Board(object):
 
         # Create pin instances for sonar
         self.sonar = []
-        for i in range(19):
+        for i in range(20):
             self.sonar.append(Pin(self, i))
 
         self.digital = []
@@ -305,13 +305,17 @@ class Board(object):
         """
         Configure a distance (sonar) sensor
         """
-        if max_distance > 200:
-            max_distance = 200
-        max_distance_lsb = max_distance & 0x7f
-        max_distance_msb = (max_distance >> 7) & 0x7f
-        data = [pin, pin, ping_interval, max_distance_lsb, max_distance_msb]
-        self.sonar[pin]._mode = INPUT
-        self.send_sysex(SONAR_CONFIG, data)
+        if self.sonar[pin]._active == False:
+            if max_distance > 200:
+                max_distance = 200
+            max_distance_lsb = max_distance & 0x7f
+            max_distance_msb = (max_distance >> 7) & 0x7f
+            data = [pin, pin, ping_interval, max_distance_lsb, max_distance_msb]
+
+            self.sonar[pin]._mode = INPUT
+            self.sonar[pin]._active = True
+
+            self.send_sysex(SONAR_CONFIG, data)
 
     def exit(self):
         """Call this to exit cleanly."""
@@ -356,6 +360,7 @@ class Board(object):
         minor = data[1]
         self.firmware_version = (major, minor)
         self.firmware = two_byte_iter_to_str(data[2:])
+
 
 class Port(object):
     """An 8-bit port on the board."""
@@ -412,7 +417,7 @@ class Port(object):
 
 class Pin(object):
     """A Pin representation"""
-    def __init__(self, board, pin_number, type=ANALOG, port=None):
+    def __init__(self, board, pin_number, type=ANALOG, port=None, active=False):
         self.board = board
         self.pin_number = pin_number
         self.type = type
@@ -421,6 +426,7 @@ class Pin(object):
         self._mode = (type == DIGITAL and OUTPUT or INPUT)
         self.reporting = False
         self.value = None
+        self._active = active
 
     def __str__(self):
         type = {ANALOG : 'Analog', DIGITAL : 'Digital'}[self.type]
