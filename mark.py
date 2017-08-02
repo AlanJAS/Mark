@@ -36,7 +36,8 @@ import pyfirmata
 
 VALUE = {_('HIGH'): 1, _('LOW'): 0}
 MODE = {_('INPUT'): pyfirmata.INPUT, _('OUTPUT'): pyfirmata.OUTPUT,
-        _('PWM'): pyfirmata.PWM, _('SERVO'): pyfirmata.SERVO}
+        _('PWM'): pyfirmata.PWM, _('SERVO'): pyfirmata.SERVO,
+        _('SONAR'): pyfirmata.SONAR}
 
 ERROR = _('ERROR: Check the mark and the number of port')
 ERROR_VALUE_A = _('ERROR: Value must be a number from 0 to 1')
@@ -202,6 +203,7 @@ class Mark(Plugin):
     def stop(self):
         self.markTurnMotorA(0)
         self.markTurnMotorB(0)
+        self.resetBoards()
 
     ###########################################################################
 
@@ -209,6 +211,13 @@ class Mark(Plugin):
         n = len(self._marks)
         if (self.active_mark > n) or (self.active_mark < 0):
             raise logoerror(_('Not found mark %s') % (self.active_mark + 1))
+
+    def resetBoards(self):
+        for m in self._marks:
+            try:
+                m.system_reset()
+            except:
+                pass
 
     def markTurnMotorA(self, power):
         self._turn_motor(11, 13, power)
@@ -231,11 +240,36 @@ class Mark(Plugin):
             return int(value * 100)
         return value
 
+    def _convert_pin(self, pin):
+        """
+        Convert analog pin to digital equivalent
+        """
+        if pin < 6:
+            return pin + 14
+        else:
+            return pin
+
     def markDist(self, pin):
-        value = self.analogRead(pin)
-        if not(value == -1):
-            return int(value * 100)
-        return value
+        try:
+            pin = int(pin)
+        except:
+            raise logoerror(ERROR_PIN_TYPE)
+        res = -1
+        try:
+            a = self._marks[self.active_mark]
+            digital_pin = self._convert_pin(pin)
+
+            a.sonar_config(digital_pin)
+            
+            a.sonar[digital_pin].enable_reporting()
+            a.pass_time(0.05)
+            res = a.sonar[digital_pin].read()
+            a.sonar[pin].disable_reporting()
+        except:
+            pass
+        if not(res == False):
+            return res
+        return -1
 
     def markButton(self, pin):
         """self.pinMode(pin, _('INPUT'))
