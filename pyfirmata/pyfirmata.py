@@ -361,6 +361,16 @@ class Board(object):
         self.firmware_version = (major, minor)
         self.firmware = two_byte_iter_to_str(data[2:])
 
+    def system_reset(self):
+        """
+        Send the reset command to the Arduino.
+        """
+        data = chr(SYSTEM_RESET)
+        self.sp.write(data)
+        # reset all sonar status
+        for p in self.sonar:
+            p._active = False
+
 
 class Port(object):
     """An 8-bit port on the board."""
