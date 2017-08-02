@@ -22,6 +22,10 @@ QUERY_FIRMWARE = 0x79       # query the firmware name
 
 # extended command set using sysex (0-127/0x00-0x7F)
 # 0x00-0x0F reserved for user-defined commands */
+
+SONAR_CONFIG = 0x62  # configure pins to control a Ping type sonar distance device
+SONAR_DATA = 0x63  # distance data returned
+
 SERVO_CONFIG = 0x70         # set max angle, minPulse, maxPulse, freq
 STRING_DATA = 0x71          # a string message with 14-bits per char
 SHIFT_DATA = 0x75           # a bitstream to/from a shift register
@@ -42,6 +46,7 @@ OUTPUT = 1         # as defined in wiring.h
 ANALOG = 2         # analog pin in analogInput mode
 PWM = 3            # digital pin in PWM output mode
 SERVO = 4          # digital pin in SERVO mode
+SONAR = 0x0b       # Any pin in SONAR mode
 
 # Pin types
 DIGITAL = OUTPUT   # same as OUTPUT below
@@ -111,6 +116,11 @@ class Board(object):
         for i in board_layout['analog']:
             self.analog.append(Pin(self, i))
 
+        # Create pin instances for sonar
+        self.sonar = []
+        for i in range(19):
+            self.sonar.append(Pin(self, i))
+
         self.digital = []
         self.digital_ports = []
         for i in xrange(0, len(board_layout['digital']), 8):
@@ -139,6 +149,7 @@ class Board(object):
         self.add_cmd_handler(DIGITAL_MESSAGE, self._handle_digital_message)
         self.add_cmd_handler(REPORT_VERSION, self._handle_report_version)
         self.add_cmd_handler(REPORT_FIRMWARE, self._handle_report_firmware)
+        self.add_cmd_handler(SONAR_DATA, self._handle_sonar_message)
 
     def add_cmd_handler(self, cmd, func):
         """Adds a command handler for a command."""
@@ -220,6 +231,7 @@ class Board(object):
             self.sp.write(byte)
         self.sp.write(chr(END_SYSEX))
 
+
     def bytes_available(self):
         return self.sp.inWaiting()
 
@@ -289,6 +301,18 @@ class Board(object):
         self.digital[pin]._mode = SERVO
         self.digital[pin].write(angle)
 
+    def sonar_config(self, pin, cb=None, ping_interval=50, max_distance=200):
+        """
+        Configure a distance (sonar) sensor
+        """
+        if max_distance > 200:
+            max_distance = 200
+        max_distance_lsb = max_distance & 0x7f
+        max_distance_msb = (max_distance >> 7) & 0x7f
+        data = [pin, pin, ping_interval, max_distance_lsb, max_distance_msb]
+        self.sonar[pin]._mode = INPUT
+        self.send_sysex(SONAR_CONFIG, data)
+
     def exit(self):
         """Call this to exit cleanly."""
         # First detach all servo's, otherwise it somehow doesn't want to close...
@@ -319,6 +343,10 @@ class Board(object):
             self.digital_ports[port_nr]._update(mask)
         except IndexError:
             raise ValueError
+
+    def _handle_sonar_message(self, pin_nr, lsb, msb):
+        mask = (msb << 7) + lsb
+        self.sonar[pin_nr].value = mask
 
     def _handle_report_version(self, major, minor):
         self.firmata_version = (major, minor)
