@@ -373,6 +373,12 @@ class Board(object):
         # reset all sonar status
         for p in self.sonar:
             p._active = False
+        for p in self.analog:
+            p.type = ANALOG
+            p.mode = INPUT
+        for p in self.digital[2:]:
+            p.type = DIGITAL
+            p.mode = OUTPUT
 
 
 class Port(object):
