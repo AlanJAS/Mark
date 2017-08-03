@@ -380,6 +380,9 @@ class Board(object):
             p.type = DIGITAL
             p.mode = OUTPUT
 
+    def getFirmware(self):
+        self.send_sysex(REPORT_FIRMWARE, [])
+
 
 class Port(object):
     """An 8-bit port on the board."""

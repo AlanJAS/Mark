@@ -29,7 +29,7 @@ from TurtleArt.tapalette import special_block_colors
 from TurtleArt.talogo import logoerror
 from TurtleArt.taconstants import CONSTANTS
 from TurtleArt.taprimitive import Primitive, ArgSlot, ConstantArg
-from TurtleArt.tatype import TYPE_INT, TYPE_FLOAT, TYPE_STRING, TYPE_NUMBER
+from TurtleArt.tatype import TYPE_INT, TYPE_FLOAT, TYPE_STRING, TYPE_NUMBER, TYPE_BOOL
 
 sys.path.insert(0, os.path.abspath('./plugins/mark'))
 import pyfirmata
@@ -105,6 +105,15 @@ class Mark(Plugin):
         self.tw.lc.def_prim('markname', 1,
             Primitive(self.getName, TYPE_STRING, [ArgSlot(TYPE_NUMBER)]))
 
+        palette.add_block('markfirmware',
+                  style='number-style-1arg',
+                  label=_('mark firmware'),
+                  default=[1],
+                  help_string=_('Get the version of an mark firmware'),
+                  prim_name='markfirmware')
+        self.tw.lc.def_prim('markfirmware', 1,
+            Primitive(self.getFirmware, TYPE_STRING, [ArgSlot(TYPE_NUMBER)]))
+
         # motors
 
         palette.add_block('markTurnMotorA',
@@ -171,13 +180,13 @@ class Mark(Plugin):
             Primitive(self.markDist, TYPE_NUMBER, arg_descs=[ArgSlot(TYPE_NUMBER)]))
 
         palette.add_block('markButton',
-                  style='number-style-1arg',
+                  style='boolean-1arg-block-style',
                   label=[_('mark button')],
                   default=[1],
                   help_string=_('Read the button state. When is 1 is pressed, 0 otherwise'),
                   prim_name='markButton')
         self.tw.lc.def_prim('markButton', 1,
-            Primitive(self.markButton, TYPE_NUMBER, arg_descs=[ArgSlot(TYPE_NUMBER)]))
+            Primitive(self.markButton, TYPE_BOOL, arg_descs=[ArgSlot(TYPE_NUMBER)]))
 
         palette.add_block('markLED',
                           style='basic-style-2arg',
@@ -235,10 +244,18 @@ class Mark(Plugin):
         self._turn_servo(pin, angle)
 
     def markGray(self, pin):
-        value = self.analogRead(pin)
-        if not(value == -1):
-            return int(value * 100)
-        return value
+        try:
+            pin = int(pin)
+        except:
+            raise logoerror(ERROR_PIN_TYPE)
+        res = -1
+        try:
+            res = self.analogRead(pin)
+        except:
+            pass
+        if not(res == -1):
+            return int(res * 100)
+        return res
 
     def _convert_pin(self, pin):
         """
@@ -272,23 +289,30 @@ class Mark(Plugin):
         return -1
 
     def markButton(self, pin):
-        """self.pinMode(pin, _('INPUT'))
-        value = self.digitalRead(pin)
-        if not(value == -1):
-            return value
-        return value"""
-        value = self.analogRead(pin)
-        if not(value == -1):
-            return value
-        return value
+        res = -1
+        try:
+            res = self.analogRead(pin)
+        except:
+            pass
+        if not(res == -1):
+            if res > 0:
+                return 0
+            else:
+                return 1
+        return res
 
     def markLED(self, pin, on_off):
-        #self.pinMode(pin, _('OUTPUT'))
-        #self.analogWrite(pin, on_off)
-        pin = int(pin)
-        a = self._marks[self.active_mark]
-        a.digital[pin].write(on_off)
-
+        try:
+            pin = int(pin)
+        except:
+            raise logoerror(ERROR_PIN_TYPE)
+        try:
+            a = self._marks[self.active_mark]
+            new_mode = MODE[_('OUTPUT')]
+            a.digital[pin]._set_mode(new_mode)
+            a.digital[pin].write(on_off)
+        except:
+            pass
 
     def _turn_motor(self, pin_p, pin_s, power):
         try:
@@ -494,6 +518,14 @@ class Mark(Plugin):
             return a.name
         else:
             raise logoerror(_('Not found mark %s') % (i + 1))
+
+    def getFirmware(self, i):
+        try:
+            a = self._marks[self.active_mark]
+            a.getFirmware()
+            return a.firmware_version
+        except:
+            return "(0, 0)"
 
     def change_color_blocks(self):
         if len(self._marks) > 0:
