@@ -372,8 +372,6 @@ class Mark(Plugin):
         except:
             raise logoerror(ERROR)
 
-        
-
     def pinMode(self, pin, mode):
         self._check_init()
         try:
@@ -392,69 +390,11 @@ class Mark(Plugin):
         else:
             raise logoerror(ERROR_MODE)
 
-    def analogWrite(self, pin, value):
-        self._check_init()
-        try:
-            pin = int(pin)
-        except:
-            raise logoerror(ERROR_PIN_TYPE)
-        try:
-            tmp = float(value)
-        except:
-            raise logoerror(ERROR_VALUE_TYPE)
-        try:
-            a = self._marks[self.active_mark]
-            mode = a.digital[pin]._get_mode()
-        except:
-            raise logoerror(ERROR)
-        if mode == MODE[_('PWM')]:
-            min_value = 0
-            max_value = 100
-            error = ERROR_VALUE_A
-        elif mode == MODE[_('SERVO')]:
-            min_value = 0
-            max_value = 180
-            error = ERROR_VALUE_S
-        else:
-            raise logoerror(ERROR_PIN_CONFIGURED)
-        if not((tmp < min_value) or (tmp > max_value)):
-            try:
-                a = self._marks[self.active_mark]
-                a.digital[pin].write(tmp)
-            except:
-                raise logoerror(ERROR)
-        else:
-            raise logoerror(error)
 
-    def digitalWrite(self, pin, value):
-        self._check_init()
-        try:
-            pin = int(pin)
-        except:
-            raise logoerror(ERROR_PIN_TYPE)
-        try:
-            value = int(value)
-        except:
-            raise logoerror(ERROR_VALUE_TYPE)
-        try:
-            a = self._marks[self.active_mark]
-            mode = a.digital[pin]._get_mode()
-        except:
-            raise logoerror(ERROR)
-        print a, mode
-        if mode != MODE[_('OUTPUT')]:
-            raise logoerror(ERROR_PIN_CONFIGURED)
-        if (value < 0) or (value > 1):
-            raise logoerror(ERROR_VALUE_D)
-        else:
-            try:
-                a = self._marks[self.active_mark]
-                a.digital[pin].write(value)
-            except:
-                raise logoerror(ERROR)
+
+
 
     def analogRead(self, pin):
-        #self._check_init()
         try:
             pin = int(pin)
         except:
@@ -463,37 +403,9 @@ class Mark(Plugin):
         try:
             a = self._marks[self.active_mark]
             a.analog[pin].enable_reporting()
-            a.pass_time(0.05) # wait for the iterator to start receiving data
+            a.pass_time(0.05)
             res = a.analog[pin].read()
             a.analog[pin].disable_reporting()
-        except:
-            pass
-        return res
-
-    def digitalRead(self, pin):
-        self._check_init()
-        try:
-            pin = int(pin)
-        except:
-            raise logoerror(ERROR_PIN_TYPE)
-        try:
-            a = self._marks[self.active_mark]
-            mode = a.digital[pin]._get_mode()
-        except:
-            raise logoerror(ERROR)
-        if mode != MODE[_('INPUT')]:
-            raise logoerror(ERROR_PIN_CONFIGURED)
-        res = -1
-        try:
-            a = self._marks[self.active_mark]
-            a.digital[pin].enable_reporting()
-            a.pass_time(0.05) # wait for the iterator to start receiving data
-            if a.digital[pin].read() is None:
-                # if the library returns None it is actually False  not being updated
-                res = False
-            else:
-                res = a.digital[pin].read()
-            a.digital[pin].disable_reporting()
         except:
             pass
         return res
