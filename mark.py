@@ -260,7 +260,7 @@ class Mark(Plugin):
             res = self.analogRead(pin)
         except:
             pass
-        if not(res == -1):
+        if (res <> -1) and (res <> None):
             return int(res * 100)
         return res
 
