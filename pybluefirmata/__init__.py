@@ -1,7 +1,7 @@
-from pyfirmata import *
+from pybluefirmata import *
 from boards import BOARDS
 
-__version__ = '0.9.5'  # Don't forget to change in setup.py!
+__version__ = '0.9.6'  
 
 # shortcut classes
 

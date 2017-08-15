@@ -1,33 +1,12 @@
 import threading
-import serial
+
 import time
 import os
-import pyfirmata
+import pybluefirmata
+
 from boards import BOARDS
 
-def get_the_board(layout=BOARDS['arduino'], base_dir='/dev/', identifier='tty.usbserial',):
-    """
-    Helper function to get the one and only board connected to the computer
-    running this. It assumes a normal arduino layout, but this can be
-    overriden by passing a different layout dict as the ``layout`` parameter.
-    ``base_dir`` and ``identifier`` are overridable as well. It will raise an
-    IOError if it can't find a board, on a serial, or if it finds more than
-    one.
-    """
-    boards = []
-    for device in os.listdir(base_dir):
-        if device.startswith(identifier):
-            try:
-                board = pyfirmata.Board(os.path.join(base_dir, device), layout)
-            except serial.SerialException:
-                pass
-            else:
-                boards.append(board)
-    if len(boards) == 0:
-        raise IOError, "No boards found in %s with identifier %s" % (base_dir, identifier)
-    elif len(boards) > 1:
-        raise IOError, "More than one board found!"
-    return boards[0]
+
 
 class Iterator(threading.Thread):
     def __init__(self, board):
@@ -37,12 +16,12 @@ class Iterator(threading.Thread):
     def run(self):
         while 1:
             try:
-                while self.board.bytes_available():
-                    self.board.iterate()
+                self.board.iterate()
                 time.sleep(0.001)
-            except (AttributeError, serial.SerialException, OSError), e:
+            except (AttributeError, OSError), e:
                 # this way we can kill the thread by setting the board object
-                # to None, or when the serial port is closed by board.exit()
+                # to None, or when the port is closed by board.exit()
+                print 'errr', e
                 break
             except Exception, e:
                 # catch 'error: Bad file descriptor'
@@ -183,6 +162,3 @@ def break_to_bytes(value):
                 least = (c, rest)
     return (c, value / c)
 
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
