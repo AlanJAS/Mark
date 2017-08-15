@@ -217,9 +217,13 @@ class Mark(Plugin):
                 pass
 
     def stop(self):
-        self.markTurnMotorA(0)
-        self.markTurnMotorB(0)
+        try:
+            self.markTurnMotorA(0)
+            self.markTurnMotorB(0)
+        except:
+            pass
         self.resetBoards()
+        
 
     ###########################################################################
 
