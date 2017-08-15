@@ -390,10 +390,6 @@ class Mark(Plugin):
         else:
             raise logoerror(ERROR_MODE)
 
-
-
-
-
     def analogRead(self, pin):
         try:
             pin = int(pin)
@@ -495,13 +491,16 @@ class Mark(Plugin):
                     raise logoerror(_('Error loading %s board') % n)
 
         # search for bluetooth marks
-        for h, n in bluetooth.discover_devices(lookup_names=True):
-            board = pybluefirmata.Arduino(h)
-            board.connect()
-            it = pybluefirmata.util.Iterator(board)
-            it.start()
-            self._marks.append(board)
-            self._marks_it.append(it)
+        try:
+            for h, n in bluetooth.discover_devices(lookup_names=True):
+                board = pybluefirmata.Arduino(h)
+                board.connect()
+                it = pybluefirmata.util.Iterator(board)
+                it.start()
+                self._marks.append(board)
+                self._marks_it.append(it)
+        except:
+            pass
 
         self.change_color_blocks()
 
