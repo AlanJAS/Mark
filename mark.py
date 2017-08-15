@@ -42,14 +42,10 @@ MODE = {_('INPUT'): pyfirmata.INPUT, _('OUTPUT'): pyfirmata.OUTPUT,
         _('SONAR'): pyfirmata.SONAR}
 
 ERROR = _('ERROR: Check the mark and the number of port')
-ERROR_VALUE_A = _('ERROR: Value must be a number from 0 to 1')
-ERROR_VALUE_S = _('ERROR: Value must be an integer from -100 to 180')
+ERROR_VALUE_S = _('ERROR: Value must be an integer from 0 to 180')
 ERROR_SPEED = _('ERROR: The speed must be a number from 0 to 100')
 ERROR_VALUE_D = _('ERROR: Value must be either HIGH or LOW, 0 or 1')
-ERROR_MODE = _('ERROR: The mode must be either INPUT, OUTPUT, PWM or SERVO')
-ERROR_VALUE_TYPE = _('ERROR: The value must be an integer')
 ERROR_PIN_TYPE = _('ERROR: The pin must be an integer')
-ERROR_PIN_CONFIGURED = _('ERROR: You must configure the mode for the pin')
 
 COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
 COLOR_PRESENT = ["#FF0000", "#A06060"]
@@ -375,24 +371,6 @@ class Mark(Plugin):
             a.digital[pin].write(angle)
         except:
             raise logoerror(ERROR)
-
-    def pinMode(self, pin, mode):
-        self._check_init()
-        try:
-            pin = int(pin)
-        except:
-            raise logoerror(ERROR_PIN_TYPE)
-        if (mode in MODE):
-            try:
-                a = self._marks[self.active_mark]
-                actual_mode = a.digital[pin]._get_mode()
-                new_mode = MODE[mode]
-                if actual_mode <> new_mode:
-                    a.digital[pin]._set_mode(new_mode)
-            except:
-                raise logoerror(ERROR)
-        else:
-            raise logoerror(ERROR_MODE)
 
     def analogRead(self, pin):
         try:
