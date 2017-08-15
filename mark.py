@@ -33,6 +33,8 @@ from TurtleArt.tatype import TYPE_INT, TYPE_FLOAT, TYPE_STRING, TYPE_NUMBER, TYP
 
 sys.path.insert(0, os.path.abspath('./plugins/mark'))
 import pyfirmata
+import bluetooth
+import pybluefirmata
 
 VALUE = {_('HIGH'): 1, _('LOW'): 0}
 MODE = {_('INPUT'): pyfirmata.INPUT, _('OUTPUT'): pyfirmata.OUTPUT,
@@ -206,6 +208,11 @@ class Mark(Plugin):
         for dev in self._marks:
             try:
                 dev.exit()
+            except:
+                pass
+        for it in self._marks_it:
+            try:
+                it.stop()
             except:
                 pass
 
@@ -554,6 +561,7 @@ class Mark(Plugin):
                 pass
         self._marks = []
         self._marks_it = []
+
         #Search for new marks
         status,output_usb = commands.getstatusoutput("ls /dev/ | grep ttyUSB")
         output_usb_parsed = output_usb.split('\n')
@@ -573,5 +581,15 @@ class Mark(Plugin):
                 except Exception, err:
                     print err
                     raise logoerror(_('Error loading %s board') % n)
+
+        # search for bluetooth marks
+        for h, n in bluetooth.discover_devices(lookup_names=True):
+            board = pybluefirmata.Arduino(h)
+            board.connect()
+            it = pybluefirmata.util.Iterator(board)
+            it.start()
+            self._marks.append(board)
+            self._marks_it.append(it)
+
         self.change_color_blocks()
 
