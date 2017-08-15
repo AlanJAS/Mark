@@ -12,17 +12,13 @@ class Iterator(threading.Thread):
     def __init__(self, board):
         super(Iterator, self).__init__()
         self.board = board
+        self._execute = True
 
     def run(self):
-        while 1:
+        while self._execute:
             try:
                 self.board.iterate()
                 time.sleep(0.001)
-            except (AttributeError, OSError), e:
-                # this way we can kill the thread by setting the board object
-                # to None, or when the port is closed by board.exit()
-                print 'errr', e
-                break
             except Exception, e:
                 # catch 'error: Bad file descriptor'
                 # iterate may be called while the serial port is being closed,
@@ -35,6 +31,10 @@ class Iterator(threading.Thread):
                 except (TypeError, IndexError):
                     pass
                 raise
+
+    def stop(self):
+        self._execute = False
+
 
 def to_two_bytes(integer):
     """

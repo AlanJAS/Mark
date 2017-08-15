@@ -5,37 +5,15 @@ import os
 import pyfirmata
 from boards import BOARDS
 
-def get_the_board(layout=BOARDS['arduino'], base_dir='/dev/', identifier='tty.usbserial',):
-    """
-    Helper function to get the one and only board connected to the computer
-    running this. It assumes a normal arduino layout, but this can be
-    overriden by passing a different layout dict as the ``layout`` parameter.
-    ``base_dir`` and ``identifier`` are overridable as well. It will raise an
-    IOError if it can't find a board, on a serial, or if it finds more than
-    one.
-    """
-    boards = []
-    for device in os.listdir(base_dir):
-        if device.startswith(identifier):
-            try:
-                board = pyfirmata.Board(os.path.join(base_dir, device), layout)
-            except serial.SerialException:
-                pass
-            else:
-                boards.append(board)
-    if len(boards) == 0:
-        raise IOError, "No boards found in %s with identifier %s" % (base_dir, identifier)
-    elif len(boards) > 1:
-        raise IOError, "More than one board found!"
-    return boards[0]
 
 class Iterator(threading.Thread):
     def __init__(self, board):
         super(Iterator, self).__init__()
         self.board = board
+        self._execute = True
 
     def run(self):
-        while 1:
+        while self._execute:
             try:
                 while self.board.bytes_available():
                     self.board.iterate()
@@ -56,6 +34,9 @@ class Iterator(threading.Thread):
                 except (TypeError, IndexError):
                     pass
                 raise
+
+    def stop(self):
+        self._execute = False
 
 def to_two_bytes(integer):
     """
