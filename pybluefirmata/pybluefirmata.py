@@ -99,6 +99,7 @@ class Board(object):
         self.sock = sock
         # no bloqueo
         #self.sock.setblocking(1)
+        self.sock.settimeout(1)
 
     def __str__(self):
         return "Board %s on %s" % (self.name, self.host)
@@ -249,10 +250,13 @@ class Board(object):
         This method should be called in a main loop or in an :class:`Iterator`
         instance to keep this boards pin values up to date.
         """
-        byte = self.sock.recv(1)
+        byte = None
+        try:
+            byte = self.sock.recv(1)
+        except:
+            pass
         
         if not byte:
-            print 'aca retorna'
             return
         data = ord(byte)
         print data
