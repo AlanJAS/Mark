@@ -259,7 +259,6 @@ class Board(object):
         if not byte:
             return
         data = ord(byte)
-        print data
         received_data = []
         handler = None
         if data < START_SYSEX:
