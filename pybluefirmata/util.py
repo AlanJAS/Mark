@@ -19,8 +19,7 @@ class Iterator(threading.Thread):
             try:
                 self.board.iterate()
                 time.sleep(0.001)
-            except Exception, e:
-                print 'Error in Iterator', e
+            except:
                 continue
 
     def stop(self):
