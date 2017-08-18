@@ -20,17 +20,8 @@ class Iterator(threading.Thread):
                 self.board.iterate()
                 time.sleep(0.001)
             except Exception, e:
-                # catch 'error: Bad file descriptor'
-                # iterate may be called while the serial port is being closed,
-                # causing an "error: (9, 'Bad file descriptor')"
-                if getattr(e, 'errno', None) == 9:
-                    break
-                try:
-                    if e[0] == 9:
-                        break
-                except (TypeError, IndexError):
-                    pass
-                raise
+                print 'Error in Iterator', e
+                continue
 
     def stop(self):
         self._execute = False
