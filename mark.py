@@ -56,7 +56,7 @@ class Mark(Plugin):
     def __init__(self, parent):
         Plugin.__init__(self)
         self.tw = parent
-        self._baud = 57600
+        self._baud = 115200
         self.active_mark = 0
         self._marks = []
         self._marks_it = []
