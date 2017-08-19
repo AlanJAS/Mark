@@ -77,6 +77,16 @@ class Mark(Plugin):
             Primitive(self.refresh))
         special_block_colors['markrefresh'] = COLOR_PRESENT[:]
 
+        palette.add_block('markconnect',
+                          style='basic-style-1arg',
+                          default ="MARK0001",
+                          label=_('connect mark'),
+                          help_string=_('connect to specific Mark with name'),
+                          prim_name = 'markconnect')
+        self.tw.lc.def_prim('markconnect', 1,
+            Primitive(self.markConnect, arg_descs=[ArgSlot(TYPE_STRING)]))
+        special_block_colors['markconnect'] = COLOR_PRESENT[:]
+
         palette.add_block('markselect',
                           style='basic-style-1arg',
                           default = 1,
@@ -111,15 +121,6 @@ class Mark(Plugin):
                   prim_name='markfirmware')
         self.tw.lc.def_prim('markfirmware', 1,
             Primitive(self.getFirmware, TYPE_STRING, [ArgSlot(TYPE_NUMBER)]))
-
-        palette.add_block('markconnect',
-                          style='basic-style-1arg',
-                          default ="MARK0001",
-                          label=_('connect mark'),
-                          help_string=_('connect to specific Mark with name'),
-                          prim_name = 'markconnect')
-        self.tw.lc.def_prim('markconnect', 1,
-            Primitive(self.markConnect, arg_descs=[ArgSlot(TYPE_STRING)]))
 
         # motors
 
@@ -470,7 +471,7 @@ class Mark(Plugin):
             for block in self.tw.block_list.list:
                 if block.type in ['proto', 'block']:
                     if block.name in mark_blocks:
-                        if (mark_present) or (block.name == 'markrefresh'):
+                        if (mark_present) or (block.name == 'markrefresh') or (block.name == 'markconnect'):
                             special_block_colors[block.name] = COLOR_PRESENT[:]
                         else:
                             special_block_colors[block.name] = COLOR_NOTPRESENT[:]
