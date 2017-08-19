@@ -112,6 +112,15 @@ class Mark(Plugin):
         self.tw.lc.def_prim('markfirmware', 1,
             Primitive(self.getFirmware, TYPE_STRING, [ArgSlot(TYPE_NUMBER)]))
 
+        palette.add_block('markconnect',
+                          style='basic-style-1arg',
+                          default ="MARK0001",
+                          label=_('connect mark'),
+                          help_string=_('connect to specific Mark with name'),
+                          prim_name = 'markconnect')
+        self.tw.lc.def_prim('markconnect', 1,
+            Primitive(self.markConnect, arg_descs=[ArgSlot(TYPE_STRING)]))
+
         # motors
 
         palette.add_block('markTurnMotorA',
@@ -420,9 +429,35 @@ class Mark(Plugin):
         try:
             a = self._marks[self.active_mark]
             a.getFirmware()
+            print a.firmware_version, a.firmware
             return a.firmware_version
         except:
             return "(0, 0)"
+
+    def markConnect(self, name):
+        try:
+            name = str(name)
+        except:
+            raise logoerror(_('The name must be a string'))
+        self._marks = []
+        self._marks_it = []
+        try:
+            for h, n in bluetooth.discover_devices(lookup_names=True):
+                if n == name:
+                    board = pybluefirmata.Arduino(h, name=n)
+                    board.connect()
+                    it = pybluefirmata.util.Iterator(board)
+                    it.start()
+                    self._marks.append(board)
+                    self._marks_it.append(it)
+                    break
+        except:
+            pass
+
+        self.change_color_blocks()
+
+        if len(self._marks) == 0:
+            raise logoerror(_('Not found mark %s') % name)
 
     def change_color_blocks(self):
         if len(self._marks) > 0:
@@ -475,7 +510,7 @@ class Mark(Plugin):
         # search for bluetooth marks
         try:
             for h, n in bluetooth.discover_devices(lookup_names=True):
-                board = pybluefirmata.Arduino(h)
+                board = pybluefirmata.Arduino(h, name=n)
                 board.connect()
                 it = pybluefirmata.util.Iterator(board)
                 it.start()
