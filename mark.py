@@ -122,8 +122,6 @@ class Mark(Plugin):
         self.tw.lc.def_prim('markfirmware', 1,
             Primitive(self.getFirmware, TYPE_STRING, [ArgSlot(TYPE_NUMBER)]))
 
-        # motors
-
         palette.add_block('markTurnMotorA',
                   style='basic-style-1arg',
                   label=_('mark motor A'),
@@ -132,15 +130,6 @@ class Mark(Plugin):
                   prim_name='markTurnMotorA')
         self.tw.lc.def_prim('markTurnMotorA', 1,
             Primitive(self.markTurnMotorA, arg_descs=[ArgSlot(TYPE_INT)]))
- 
-        palette.add_block('markTurnMotorB',
-                  style='basic-style-1arg',
-                  label=_('mark motor B'),
-                  default=100,
-                  help_string=_('Turn motor B'),
-                  prim_name='markTurnMotorB')
-        self.tw.lc.def_prim('markTurnMotorB', 1,
-            Primitive(self.markTurnMotorB, arg_descs=[ArgSlot(TYPE_INT)]))
 
         palette.add_block('markBrakeMotorA',
                   style='basic-style',
@@ -149,25 +138,6 @@ class Mark(Plugin):
                   prim_name='markBrakeMotorA')
         self.tw.lc.def_prim('markBrakeMotorA', 0,
             Primitive(self.markBrakeMotorA))
-
-        palette.add_block('markBrakeMotorB',
-                  style='basic-style',
-                  label=_('brake motor B'),
-                  help_string=_('Brake motor B'),
-                  prim_name='markBrakeMotorB')
-        self.tw.lc.def_prim('markBrakeMotorB', 0,
-            Primitive(self.markBrakeMotorB))
-
-        palette.add_block('markServo',
-                  style='basic-style-2arg',
-                  label=[_('mark servo'), _('pin'), _('angle')],
-                  default=[10, 100],
-                  help_string=_('put a mark servo in angle'),
-                  prim_name='markServo')
-        self.tw.lc.def_prim('markServo', 2,
-            Primitive(self.markServo, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
-
-        # sensors
 
         palette.add_block('markGray',
                   style='number-style-1arg',
@@ -178,6 +148,23 @@ class Mark(Plugin):
         self.tw.lc.def_prim('markGray', 1,
             Primitive(self.markGray, TYPE_NUMBER, arg_descs=[ArgSlot(TYPE_NUMBER)]))
 
+        palette.add_block('markTurnMotorB',
+                  style='basic-style-1arg',
+                  label=_('mark motor B'),
+                  default=100,
+                  help_string=_('Turn motor B'),
+                  prim_name='markTurnMotorB')
+        self.tw.lc.def_prim('markTurnMotorB', 1,
+            Primitive(self.markTurnMotorB, arg_descs=[ArgSlot(TYPE_INT)]))
+
+        palette.add_block('markBrakeMotorB',
+                  style='basic-style',
+                  label=_('brake motor B'),
+                  help_string=_('Brake motor B'),
+                  prim_name='markBrakeMotorB')
+        self.tw.lc.def_prim('markBrakeMotorB', 0,
+            Primitive(self.markBrakeMotorB))
+
         palette.add_block('markDist',
                   style='number-style-1arg',
                   label=[_('mark dist')],
@@ -186,6 +173,15 @@ class Mark(Plugin):
                   prim_name='markDist')
         self.tw.lc.def_prim('markDist', 1,
             Primitive(self.markDist, TYPE_NUMBER, arg_descs=[ArgSlot(TYPE_NUMBER)]))
+
+        palette.add_block('markServo',
+                  style='basic-style-2arg',
+                  label=[_('mark servo'), _('pin'), _('angle')],
+                  default=[10, 100],
+                  help_string=_('put a mark servo in angle'),
+                  prim_name='markServo')
+        self.tw.lc.def_prim('markServo', 2,
+            Primitive(self.markServo, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
 
         palette.add_block('markButton',
                   style='boolean-1arg-block-style',
@@ -204,7 +200,6 @@ class Mark(Plugin):
                           prim_name = 'markLED')
         self.tw.lc.def_prim('markLED', 2,
             Primitive(self.markLED, arg_descs=[ArgSlot(TYPE_NUMBER), ArgSlot(TYPE_NUMBER)]))
-
 
 
 
