@@ -206,14 +206,14 @@ class Mark(Plugin):
     ############################### Turtle signals ############################
 
     def quit(self):
-        for dev in self._marks:
-            try:
-                dev.exit()
-            except:
-                pass
         for it in self._marks_it:
             try:
                 it.stop()
+            except:
+                pass
+        for dev in self._marks:
+            try:
+                dev.exit()
             except:
                 pass
 
@@ -475,6 +475,11 @@ class Mark(Plugin):
 
     def refresh(self):
         #Close actual marks
+        for it in self._marks_it:
+            try:
+                it.stop()
+            except:
+                pass
         for dev in self._marks:
             try:
                 dev.exit()
