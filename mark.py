@@ -296,7 +296,7 @@ class Mark(Plugin):
             a.sonar[pin].disable_reporting()
         except:
             pass
-        if not(res == False):
+        if res:
             return res
         return -1
 
@@ -330,7 +330,7 @@ class Mark(Plugin):
         try:
             power = float(power)
         except:
-            raise logoerror(ERROR_VALUE_TYPE)
+            raise logoerror(ERROR_SPEED)
         if (power < -100) or (power > 100):
             raise logoerror(ERROR_SPEED)
         if power < 0:
@@ -409,13 +409,12 @@ class Mark(Plugin):
         return len(self._marks)
 
     def getName(self, i):
-        n = len(self._marks)
         try:
             i = int(i)
         except:
             raise logoerror(_('The device must be an integer'))
         i = i - 1
-        if (i < n) and (i >= 0):
+        if (i < len(self._marks)) and (i >= 0):
             a = self._marks[i]
             return a.name
         else:
@@ -423,12 +422,20 @@ class Mark(Plugin):
 
     def getFirmware(self, i):
         try:
-            a = self._marks[self.active_mark]
-            a.getFirmware()
-            print a.firmware_version, a.firmware
-            return a.firmware_version
+            i = int(i)
         except:
-            return "(0, 0)"
+            raise logoerror(_('The device must be an integer'))
+        i = i - 1
+        if (i < len(self._marks)) and (i >= 0):
+            try:
+                a = self._marks[i]
+                a.getFirmware()
+                #print a.firmware_version, a.firmware
+                return a.firmware_version
+            except:
+                return "(0, 0)"
+        else:
+            raise logoerror(_('Not found mark %s') % (i + 1))
 
     def markConnect(self, name):
         try:
