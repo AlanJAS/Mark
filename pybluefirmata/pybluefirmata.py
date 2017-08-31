@@ -390,9 +390,11 @@ class Board(object):
         for p in self.analog:
             p.type = ANALOG
             p.mode = INPUT
+            p.disable_reporting()
         for p in self.digital[2:]:
             p.type = DIGITAL
             p.mode = OUTPUT
+            p.disable_reporting()
 
     def getFirmware(self):
         self.send_sysex(REPORT_FIRMWARE, [])

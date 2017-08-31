@@ -223,7 +223,7 @@ class Mark(Plugin):
             self.markTurnMotorB(0)
         except:
             pass
-        self.resetBoards()
+        #self.resetBoards()
         
 
     ###########################################################################
