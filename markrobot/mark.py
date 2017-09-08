@@ -78,7 +78,6 @@ class MarkRobot(object):
         self.sock = sock
         self.setup_layout()
 
-
     def __del__(self):
         """
         The connection with the a board can get messed up when a script is
@@ -314,7 +313,7 @@ class MarkRobot(object):
             for pin in self.digital:
                 if pin.mode == SERVO:
                     pin.mode = OUTPUT
-        if hasattr(self, 'sp'):
+        if hasattr(self, 'sock'):
             self.sock.close()
 
     # Command handlers
