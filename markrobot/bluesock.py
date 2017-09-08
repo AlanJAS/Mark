@@ -4,7 +4,7 @@ try:
 except:
     pass
 
-from nxt.brick import MarkRobot
+from mark import MarkRobot
 
 class BlueSock(object):
 
@@ -13,9 +13,6 @@ class BlueSock(object):
         self.sock = None
         self.type = 'bluetooth'
 
-    def __str__(self):
-        return 'Bluetooth (%s)' % self.host
-
     def connect(self):
         sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         sock.connect((self.host, 1))
@@ -23,6 +20,7 @@ class BlueSock(object):
         # no bloqueo
         #self.sock.setblocking(1)
         self.sock.settimeout(1)
+        return MarkRobot(self)
 
     def close(self):
         self.sock.close()
@@ -39,5 +37,5 @@ def _check_markk(arg, value):
 def find_bricks(host=None, name=None):
     for h, n in bluetooth.discover_devices(lookup_names=True):
         if _check_mark(host, h) and _check_mark(name, n):
-            yield MarkRobot(h)
+            yield BlueSock(h)
 

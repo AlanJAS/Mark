@@ -13,8 +13,7 @@ class Iterator(threading.Thread):
     def run(self):
         while self._execute:
             try:
-                while self.board.bytes_available():
-                    self.board.iterate()
+                self.board.iterate()
                 time.sleep(0.001)
             except:
                 continue

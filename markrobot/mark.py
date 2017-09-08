@@ -74,25 +74,10 @@ class MarkRobot(object):
     _stored_data = []
     _parsing_sysex = False
 
-    def __init__(self, port, layout, baudrate=115200, name=None):
-        self.sp = serial.Serial(port, baudrate)
-        # Allow 5 secs for Arduino's auto-reset to happen
-        # Alas, Firmata blinks its version before printing it to serial
-        # For 2.3, even 5 seconds might not be enough.
-        # TODO Find a more reliable way to wait until the board is ready
-        self.pass_time(BOARD_SETUP_WAIT_TIME)
-        self.name = name
-        if not self.name:
-            self.name = port
+    def __init__(self, sock):
+        self.sock = sock
         self.setup_layout()
-        # Iterate over the first messages to get firmware data
-        while self.bytes_available():
-            self.iterate()
-        # TODO Test whether we got a firmware name and version, otherwise there
-        # probably isn't any Firmata installed
 
-    def __str__(self):
-        return "Board %s on %s" % (self.name, self.sp.port)
 
     def __del__(self):
         """
@@ -103,7 +88,7 @@ class MarkRobot(object):
         self.exit()
 
     def send_as_two_bytes(self, val):
-        self.sp.write(chr(val % 128) + chr(val >> 7))
+        self.sock.write(chr(val % 128) + chr(val >> 7))
 
     def setup_layout(self):
         """
@@ -226,8 +211,8 @@ class MarkRobot(object):
         :arg data: A list of 7-bit bytes of arbitrary data (bytes may be
             already converted to chr's)
         """
-        self.sp.write(chr(START_SYSEX))
-        self.sp.write(chr(sysex_cmd))
+        self.sock.write(chr(START_SYSEX))
+        self.sock.write(chr(sysex_cmd))
         for byte in data:
             try:
                 byte = chr(byte)
@@ -236,12 +221,9 @@ class MarkRobot(object):
             except ValueError:
                 raise ValueError('Sysex data can be 7-bit bytes only. '
                     'Consider using utils.to_two_bytes for bigger bytes.')
-            self.sp.write(byte)
-        self.sp.write(chr(END_SYSEX))
+            self.sock.write(byte)
+        self.sock.write(chr(END_SYSEX))
 
-
-    def bytes_available(self):
-        return self.sp.inWaiting()
 
     def iterate(self):
         """
@@ -249,7 +231,7 @@ class MarkRobot(object):
         This method should be called in a main loop or in an :class:`Iterator`
         instance to keep this boards pin values up to date.
         """
-        byte = self.sp.read()
+        byte = self.sock.read()
         if not byte:
             return
         data = ord(byte)
@@ -263,23 +245,23 @@ class MarkRobot(object):
                 return
             received_data.append(data & 0x0F)
             while len(received_data) < handler.bytes_needed:
-                received_data.append(ord(self.sp.read()))
+                received_data.append(ord(self.sock.read()))
         elif data == START_SYSEX:
-            data = ord(self.sp.read())
+            data = ord(self.sock.read())
             handler = self._command_handlers.get(data)
             if not handler:
                 return
-            data = ord(self.sp.read())
+            data = ord(self.sock.read())
             while data != END_SYSEX:
                 received_data.append(data)
-                data = ord(self.sp.read())
+                data = ord(self.sock.read())
         else:
             try:
                 handler = self._command_handlers[data]
             except KeyError:
                 return
             while len(received_data) < handler.bytes_needed:
-                received_data.append(ord(self.sp.read()))
+                received_data.append(ord(self.sock.read()))
         # Handle the data
         try:
             handler(*received_data)
@@ -333,7 +315,7 @@ class MarkRobot(object):
                 if pin.mode == SERVO:
                     pin.mode = OUTPUT
         if hasattr(self, 'sp'):
-            self.sp.close()
+            self.sock.close()
 
     # Command handlers
     def _handle_analog_message(self, pin_nr, lsb, msb):
@@ -377,7 +359,7 @@ class MarkRobot(object):
         Send the reset command to the Arduino.
         """
         data = chr(SYSTEM_RESET)
-        self.sp.write(data)
+        self.sock.write(data)
         # reset all sonar status
         for p in self.sonar:
             p._active = False
