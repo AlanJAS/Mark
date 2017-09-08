@@ -187,11 +187,11 @@ class MarkRobot(object):
         self.digital[pin]._mode = SERVO
         self.digital[pin].write(angle)
 
-    def sonar_config(self, pin, cb=None, ping_interval=50, max_distance=200):
+    def sonar_config(self, pin, ping_interval=50, max_distance=200):
         """
         Configure a distance (sonar) sensor
         """
-        if self.sonar[pin]._active == False:
+        if not(self.sonar[pin]._active):
             if max_distance > 200:
                 max_distance = 200
             max_distance_lsb = max_distance & 0x7f
