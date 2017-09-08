@@ -33,15 +33,13 @@ from TurtleArt.tatype import TYPE_INT, TYPE_FLOAT, TYPE_STRING, TYPE_NUMBER, TYP
 sys.path.insert(0, os.path.abspath('./plugins/mark'))
 import markrobot
 
-VALUE = {_('HIGH'): 1, _('LOW'): 0}
-MODE = {_('INPUT'): markrobot.INPUT, _('OUTPUT'): markrobot.OUTPUT,
-        _('PWM'): markrobot.PWM, _('SERVO'): markrobot.SERVO,
-        _('SONAR'): markrobot.SONAR}
+MODE = {'INPUT': markrobot.INPUT, 'OUTPUT': markrobot.OUTPUT,
+        'PWM': markrobot.PWM, 'SERVO': markrobot.SERVO,
+        'SONAR': markrobot.SONAR}
 
 ERROR = _('ERROR: Check the mark and the number of port')
 ERROR_VALUE_S = _('ERROR: Value must be an integer from 0 to 180')
 ERROR_SPEED = _('ERROR: The speed must be a number from 0 to 100')
-ERROR_VALUE_D = _('ERROR: Value must be either HIGH or LOW, 0 or 1')
 ERROR_PIN_TYPE = _('ERROR: The pin must be an integer')
 
 COLOR_NOTPRESENT = ["#A0A0A0","#808080"]
@@ -316,7 +314,7 @@ class Mark(Plugin):
             raise logoerror(ERROR_PIN_TYPE)
         try:
             a = self._marks[self.active_mark]
-            new_mode = MODE[_('OUTPUT')]
+            new_mode = MODE['OUTPUT']
             a.digital[pin]._set_mode(new_mode)
             a.digital[pin].write(on_off)
         except:
@@ -339,13 +337,13 @@ class Mark(Plugin):
             a = self._marks[self.active_mark]
             # check mode pwm and set the power
             actual_mode = a.digital[pin_p]._get_mode()
-            new_mode = MODE[_('PWM')]
+            new_mode = MODE['PWM']
             if actual_mode <> new_mode:
                 a.digital[pin_p]._set_mode(new_mode)
             a.digital[pin_p].write(power)
             # check mode output and set the sense
             actual_mode = a.digital[pin_s]._get_mode()
-            new_mode = MODE[_('OUTPUT')]
+            new_mode = MODE['OUTPUT']
             if actual_mode <> new_mode:
                 a.digital[pin_s]._set_mode(new_mode)
             a.digital[pin_s].write(sense)
@@ -366,7 +364,7 @@ class Mark(Plugin):
         try:
             a = self._marks[self.active_mark]
             actual_mode = a.digital[pin]._get_mode()
-            new_mode = MODE[_('SERVO')]
+            new_mode = MODE['SERVO']
             if actual_mode <> new_mode:
                 a.digital[pin]._set_mode(new_mode)
             a.digital[pin].write(angle)
