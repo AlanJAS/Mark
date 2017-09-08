@@ -6,15 +6,6 @@ from util import *
 
 
 
-class PinAlreadyTakenError(Exception):
-    pass
-
-class InvalidPinDefError(Exception):
-    pass
-
-class NoInputWarning(RuntimeWarning):
-    pass
-
 class MarkRobot(object):
     """The Base class for any board."""
     firmata_version = None
@@ -83,10 +74,6 @@ class MarkRobot(object):
         for i in layout['disabled']:
             self.digital[i].mode = UNAVAILABLE
 
-        # Create a dictionary of 'taken' pins. Used by the get_pin method
-        self.taken = { 'analog' : dict(map(lambda p: (p.pin_number, False), self.analog)),
-                       'digital' : dict(map(lambda p: (p.pin_number, False), self.digital)) }
-
         # Setup default handlers for standard incoming commands
         self.add_cmd_handler(ANALOG_MESSAGE, self._handle_analog_message)
         self.add_cmd_handler(DIGITAL_MESSAGE, self._handle_digital_message)
@@ -105,47 +92,6 @@ class MarkRobot(object):
             return decorator
         func = add_meta(func)
         self._command_handlers[cmd] = func
-
-    def get_pin(self, pin_def):
-        """
-        Returns the activated pin given by the pin definition.
-        May raise an ``InvalidPinDefError`` or a ``PinAlreadyTakenError``.
-
-        :arg pin_def: Pin definition as described below,
-            but without the arduino name. So for example ``a:1:i``.
-
-        'a' analog pin     Pin number   'i' for input 
-        'd' digital pin    Pin number   'o' for output
-                                        'p' for pwm (Pulse-width modulation)
-
-        All seperated by ``:``. 
-        """
-        if type(pin_def) == list:
-            bits = pin_def
-        else:
-            bits = pin_def.split(':')
-        a_d = bits[0] == 'a' and 'analog' or 'digital'
-        part = getattr(self, a_d)
-        pin_nr = int(bits[1])
-        if pin_nr >= len(part):
-            raise InvalidPinDefError('Invalid pin definition: %s at position 3 on %s' % (pin_def, self.name))
-        if getattr(part[pin_nr], 'mode', None)  == UNAVAILABLE:
-            raise InvalidPinDefError('Invalid pin definition: UNAVAILABLE pin %s at position on %s' % (pin_def, self.name))
-        if self.taken[a_d][pin_nr]:
-            raise PinAlreadyTakenError('%s pin %s is already taken on %s' % (a_d, bits[1], self.name))
-        # ok, should be available
-        pin = part[pin_nr]
-        self.taken[a_d][pin_nr] = True
-        if pin.type is DIGITAL:
-            if bits[2] == 'p':
-                pin.mode = PWM
-            elif bits[2] == 's':
-                pin.mode = SERVO
-            elif bits[2] is not 'o':
-                pin.mode = INPUT
-        else:
-            pin.enable_reporting()
-        return pin
 
     def pass_time(self, t):
         """Non-blocking time-out for ``t`` seconds."""
