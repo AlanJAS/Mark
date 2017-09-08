@@ -64,7 +64,7 @@ class InvalidPinDefError(Exception):
 class NoInputWarning(RuntimeWarning):
     pass
 
-class Board(object):
+class MarkRobot(object):
     """The Base class for any board."""
     firmata_version = None
     firmware = None
@@ -84,7 +84,7 @@ class Board(object):
         self.name = name
         if not self.name:
             self.name = port
-        self.setup_layout(layout)
+        self.setup_layout()
         # Iterate over the first messages to get firmware data
         while self.bytes_available():
             self.iterate()
@@ -105,15 +105,23 @@ class Board(object):
     def send_as_two_bytes(self, val):
         self.sp.write(chr(val % 128) + chr(val >> 7))
 
-    def setup_layout(self, board_layout):
+    def setup_layout(self):
         """
         Setup the Pin instances based on the given board layout. Maybe it will
         be possible to do this automatically in the future, by polling the
         board for its type.
         """
+        layout = {
+        'digital' : tuple(x for x in range(14)),
+        'analog' : tuple(x for x in range(6)),
+        'pwm' : (3, 5, 6, 9, 10, 11),
+        'use_ports' : True,
+        'disabled' : (0, 1) # Rx, Tx, Crystal
+        }
+
         # Create pin instances based on board layout
         self.analog = []
-        for i in board_layout['analog']:
+        for i in layout['analog']:
             self.analog.append(Pin(self, i))
 
         # Create pin instances for sonar
@@ -123,8 +131,8 @@ class Board(object):
 
         self.digital = []
         self.digital_ports = []
-        for i in xrange(0, len(board_layout['digital']), 8):
-            num_pins = len(board_layout['digital'][i:i+8])
+        for i in xrange(0, len(layout['digital']), 8):
+            num_pins = len(layout['digital'][i:i+8])
             port_number = i / 8
             self.digital_ports.append(Port(self, port_number, num_pins))
 
@@ -133,11 +141,11 @@ class Board(object):
             self.digital += port.pins
 
         # Setup PWM pins
-        for i in board_layout['pwm']:
+        for i in layout['pwm']:
             self.digital[i].PWM_CAPABLE = True
 
         # Disable certain ports like Rx/Tx and crystal ports
-        for i in board_layout['disabled']:
+        for i in layout['disabled']:
             self.digital[i].mode = UNAVAILABLE
 
         # Create a dictionary of 'taken' pins. Used by the get_pin method
@@ -557,3 +565,4 @@ class Pin(object):
                 msg += chr(value % 128)
                 msg += chr(value >> 7)
                 self.board.sp.write(msg)
+
