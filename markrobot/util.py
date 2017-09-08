@@ -42,7 +42,7 @@ class Port(object):
         self.reporting = True
         msg = chr(REPORT_DIGITAL + self.port_number)
         msg += chr(1)
-        self.board.sp.write(msg)
+        self.board.sock.write(msg)
         for pin in self.pins:
             if pin.mode == INPUT:
                 pin.reporting = True # TODO Shouldn't this happen at the pin?
@@ -52,7 +52,7 @@ class Port(object):
         self.reporting = False
         msg = chr(REPORT_DIGITAL + self.port_number)
         msg += chr(0)
-        self.board.sp.write(msg)
+        self.board.sock.write(msg)
 
     def write(self):
         """Set the output pins of the port to the correct state."""
@@ -65,7 +65,7 @@ class Port(object):
         msg = chr(DIGITAL_MESSAGE + self.port_number)
         msg += chr(mask % 128)
         msg += chr(mask >> 7)
-        self.board.sp.write(msg)
+        self.board.sock.write(msg)
 
     def _update(self, mask):
         """Update the values for the pins marked as input with the mask."""
@@ -113,7 +113,7 @@ class Pin(object):
         command = chr(SET_PIN_MODE)
         command += chr(self.pin_number)
         command += chr(mode)
-        self.board.sp.write(command)
+        self.board.sock.write(command)
         if mode == INPUT:
             self.enable_reporting()
 
@@ -134,7 +134,7 @@ class Pin(object):
             self.reporting = True
             msg = chr(REPORT_ANALOG + self.pin_number)
             msg += chr(1)
-            self.board.sp.write(msg)
+            self.board.sock.write(msg)
         else:
             self.port.enable_reporting() # TODO This is not going to work for non-optimized boards like Mega
 
@@ -144,7 +144,7 @@ class Pin(object):
             self.reporting = False
             msg = chr(REPORT_ANALOG + self.pin_number)
             msg += chr(0)
-            self.board.sp.write(msg)
+            self.board.sock.write(msg)
         else:
             self.port.disable_reporting() # TODO This is not going to work for non-optimized boards like Mega
 
@@ -180,19 +180,19 @@ class Pin(object):
                     msg = chr(DIGITAL_MESSAGE)
                     msg += chr(self.pin_number)
                     msg += chr(value)
-                    self.board.sp.write(msg)
+                    self.board.sock.write(msg)
             elif self.mode is PWM:
                 value = int(round(value * 255))
                 msg = chr(ANALOG_MESSAGE + self.pin_number)
                 msg += chr(value % 128)
                 msg += chr(value >> 7)
-                self.board.sp.write(msg)
+                self.board.sock.write(msg)
             elif self.mode is SERVO:
                 value = int(value)
                 msg = chr(ANALOG_MESSAGE + self.pin_number)
                 msg += chr(value % 128)
                 msg += chr(value >> 7)
-                self.board.sp.write(msg)
+                self.board.sock.write(msg)
 
 
 def to_two_bytes(integer):
