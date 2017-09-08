@@ -11,7 +11,7 @@ class SerialSock(object):
         self.type = 'serial'
 
     def connect(self):
-        self.sock = serial.Serial(port, baudrate)
+        self.sock = serial.Serial(self.port, 115200)
         return MarkRobot(self)
 
     def close(self):
@@ -24,7 +24,8 @@ class SerialSock(object):
         return self.sock.read()
         
 
-def find_marks(host=None, name=None):
+def find_serial_marks(host=None, name=None):
+    ret = []
     status,output_usb = commands.getstatusoutput("ls /dev/ | grep ttyUSB")
     output_usb_parsed = output_usb.split('\n')
     status,output_acm = commands.getstatusoutput("ls /dev/ | grep ttyACM")
@@ -33,6 +34,6 @@ def find_marks(host=None, name=None):
     output.extend(output_acm_parsed)
     for dev in output:
         if not(dev == ''):
-            n = '/dev/%s' % dev
-            yield SerialSock(n)
+             ret.append(SerialSock('/dev/%s' % dev))
+    return ret
 

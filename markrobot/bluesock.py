@@ -34,8 +34,13 @@ class BlueSock(object):
 def _check_markk(arg, value):
     return arg is None or arg == value
 
-def find_bricks(host=None, name=None):
-    for h, n in bluetooth.discover_devices(lookup_names=True):
-        if _check_mark(host, h) and _check_mark(name, n):
-            yield BlueSock(h)
+def find_blue_bricks(host=None, name=None):
+    ret = []
+    try:
+        for h, n in bluetooth.discover_devices(lookup_names=True):
+            if _check_mark(host, h) and _check_mark(name, n):
+                ret.append(BlueSock(h))
+    except:
+        pass
+    return ret
 
