@@ -1,5 +1,6 @@
 
 import serial
+import commands
 from mark import MarkRobot
 
 class SerialSock(object):

@@ -1,8 +1,6 @@
 import threading
 import time
-import os
-import mark
-from mark import *
+
 
 # Message command bytes - straight from Firmata.h
 DIGITAL_MESSAGE = 0x90      # send data for a digital pin

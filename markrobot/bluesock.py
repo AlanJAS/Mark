@@ -31,7 +31,7 @@ class BlueSock(object):
     def recv(self):
         return self.sock.recv(1)
 
-def _check_markk(arg, value):
+def _check_mark(arg, value):
     return arg is None or arg == value
 
 def find_blue_bricks(host=None, name=None):

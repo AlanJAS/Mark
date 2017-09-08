@@ -17,7 +17,6 @@
 
 import os
 import sys
-import commands
 
 from gettext import gettext as _
 from plugins.plugin import Plugin
@@ -35,9 +34,9 @@ sys.path.insert(0, os.path.abspath('./plugins/mark'))
 import markrobot
 
 VALUE = {_('HIGH'): 1, _('LOW'): 0}
-MODE = {_('INPUT'): pyfirmata.INPUT, _('OUTPUT'): pyfirmata.OUTPUT,
-        _('PWM'): pyfirmata.PWM, _('SERVO'): pyfirmata.SERVO,
-        _('SONAR'): pyfirmata.SONAR}
+MODE = {_('INPUT'): markrobot.INPUT, _('OUTPUT'): markrobot.OUTPUT,
+        _('PWM'): markrobot.PWM, _('SERVO'): markrobot.SERVO,
+        _('SONAR'): markrobot.SONAR}
 
 ERROR = _('ERROR: Check the mark and the number of port')
 ERROR_VALUE_S = _('ERROR: Value must be an integer from 0 to 180')
