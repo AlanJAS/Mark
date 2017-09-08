@@ -200,16 +200,7 @@ class Mark(Plugin):
     ############################### Turtle signals ############################
 
     def quit(self):
-        for it in self._marks_it:
-            try:
-                it.stop()
-            except:
-                pass
-        for dev in self._marks:
-            try:
-                dev.exit()
-            except:
-                pass
+        self._close_marks()
 
     def stop(self):
         try:
@@ -436,8 +427,8 @@ class Mark(Plugin):
             name = str(name)
         except:
             raise logoerror(_('The name must be a string'))
-        self._marks = []
-        self._marks_it = []
+
+        self._close_marks()
         
         output = markrobot.find_blue_marks(name=name)
         if len(output) > 1:
@@ -474,8 +465,7 @@ class Mark(Plugin):
                         block.refresh()
             self.tw.regenerate_palette(index)
 
-    def refresh(self):
-        #Close actual marks
+    def _close_marks(self):
         for it in self._marks_it:
             try:
                 it.stop()
@@ -488,6 +478,9 @@ class Mark(Plugin):
                 pass
         self._marks = []
         self._marks_it = []
+
+    def refresh(self):
+        self._close_marks()
 
         marks1 = markrobot.find_serial_marks()
         marks2 = markrobot.find_blue_marks()
