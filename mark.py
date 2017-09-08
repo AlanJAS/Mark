@@ -32,9 +32,7 @@ from TurtleArt.taprimitive import Primitive, ArgSlot, ConstantArg
 from TurtleArt.tatype import TYPE_INT, TYPE_FLOAT, TYPE_STRING, TYPE_NUMBER, TYPE_BOOL
 
 sys.path.insert(0, os.path.abspath('./plugins/mark'))
-import pyfirmata
-import bluetooth
-import pybluefirmata
+import markrobot
 
 VALUE = {_('HIGH'): 1, _('LOW'): 0}
 MODE = {_('INPUT'): pyfirmata.INPUT, _('OUTPUT'): pyfirmata.OUTPUT,
@@ -56,7 +54,6 @@ class Mark(Plugin):
     def __init__(self, parent):
         Plugin.__init__(self)
         self.tw = parent
-        self._baud = 115200
         self.active_mark = 0
         self._marks = []
         self._marks_it = []
@@ -444,18 +441,18 @@ class Mark(Plugin):
             raise logoerror(_('The name must be a string'))
         self._marks = []
         self._marks_it = []
-        try:
-            for h, n in bluetooth.discover_devices(lookup_names=True):
-                if n == name:
-                    board = pybluefirmata.Arduino(h, name=n)
-                    board.connect()
-                    it = pybluefirmata.util.Iterator(board)
-                    it.start()
-                    self._marks.append(board)
-                    self._marks_it.append(it)
-                    break
-        except:
-            pass
+        
+        output = markrobot.find_blue_marks(name=name)
+        if len(output) > 1:
+            dev = output[0]
+            try:
+                board = dev.connect()
+                it = markrobot.util.Iterator(board)
+                it.start()
+                self._marks.append(board)
+                self._marks_it.append(it)
+            except:
+                pass
 
         self.change_color_blocks()
 
@@ -495,37 +492,20 @@ class Mark(Plugin):
         self._marks = []
         self._marks_it = []
 
-        #Search for new marks
-        status,output_usb = commands.getstatusoutput("ls /dev/ | grep ttyUSB")
-        output_usb_parsed = output_usb.split('\n')
-        status,output_acm = commands.getstatusoutput("ls /dev/ | grep ttyACM")
-        output_acm_parsed = output_acm.split('\n')
-        output = output_usb_parsed
-        output.extend(output_acm_parsed)
-        for dev in output:
-            if not(dev == ''):
-                n = '/dev/%s' % dev
-                try:
-                    board = pyfirmata.Arduino(n, baudrate=self._baud)
-                    it = pyfirmata.util.Iterator(board)
-                    it.start()
-                    self._marks.append(board)
-                    self._marks_it.append(it)
-                except Exception, err:
-                    print err
-                    raise logoerror(_('Error loading %s board') % n)
+        marks1 = markrobot.find_serial_marks()
+        marks2 = markrobot.find_blue_marks()
+        output = marks1
+        output.extend(marks2)
 
-        # search for bluetooth marks
-        try:
-            for h, n in bluetooth.discover_devices(lookup_names=True):
-                board = pybluefirmata.Arduino(h, name=n)
-                board.connect()
-                it = pybluefirmata.util.Iterator(board)
+        for dev in output:
+            try:
+                board = dev.connect()
+                it = markrobot.util.Iterator(board)
                 it.start()
                 self._marks.append(board)
                 self._marks_it.append(it)
-        except:
-            pass
+            except:
+                pass
 
         self.change_color_blocks()
 
