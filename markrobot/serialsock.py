@@ -16,7 +16,13 @@ class SerialSock(object):
         return MarkRobot(self)
 
     def close(self):
-        self.device = None
+        self.sock.close()
+        self.sock = None
+
+    def inWaiting(self):
+        if self.sock:
+            return self.sock.inWaiting()
+        return False
 
     def write(self, data):
         self.sock.write(data)

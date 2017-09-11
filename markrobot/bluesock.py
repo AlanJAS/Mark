@@ -15,16 +15,20 @@ class BlueSock(object):
         self.type = 'bluetooth'
 
     def connect(self):
-        sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        sock.connect((self.host, 1))
-        self.sock = sock
-        # no bloqueo
+        self.sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        self.sock.connect((self.host, 1))
         #self.sock.setblocking(1)
         self.sock.settimeout(1)
         return MarkRobot(self)
 
     def close(self):
         self.sock.close()
+        self.sock = None
+
+    def inWaiting(self):
+        if self.sock:
+            return True
+        return False
 
     def write(self, data):
         self.sock.send(data)
