@@ -431,7 +431,7 @@ class Mark(Plugin):
         self._close_marks()
         
         output = markrobot.find_blue_marks(name=name)
-        if len(output) > 1:
+        if len(output) > 0:
             dev = output[0]
             try:
                 board = dev.connect()
@@ -482,8 +482,8 @@ class Mark(Plugin):
     def refresh(self):
         self._close_marks()
 
-        marks1 = markrobot.find_serial_marks()
-        marks2 = markrobot.find_blue_marks()
+        marks1 = markrobot.serialsock.find_serial_marks()
+        marks2 = markrobot.bluesock.find_blue_marks()
         output = marks1
         output.extend(marks2)
 
