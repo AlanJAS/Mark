@@ -127,6 +127,8 @@ class MarkRobot(object):
         This method should be called in a main loop or in an :class:`Iterator`
         instance to keep this boards pin values up to date.
         """
+        if not(self.sock.inWaiting()):
+            return
         byte = self.sock.read()
         if not byte:
             return
