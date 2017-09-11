@@ -8,8 +8,9 @@ from mark import MarkRobot
 
 class BlueSock(object):
 
-    def __init__(self, host):
+    def __init__(self, host, name=None):
         self.host = host
+        self.name = name
         self.sock = None
         self.type = 'bluetooth'
 
@@ -39,7 +40,7 @@ def find_blue_marks(host=None, name=None):
     try:
         for h, n in bluetooth.discover_devices(lookup_names=True):
             if _check_mark(host, h) and _check_mark(name, n):
-                ret.append(BlueSock(h))
+                ret.append(BlueSock(h, n))
     except:
         pass
     return ret
