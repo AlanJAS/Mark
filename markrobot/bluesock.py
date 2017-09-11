@@ -25,16 +25,16 @@ class BlueSock(object):
     def close(self):
         self.sock.close()
 
-    def send(self, data):
+    def write(self, data):
         self.sock.send(data)
 
-    def recv(self):
+    def read(self):
         return self.sock.recv(1)
 
 def _check_mark(arg, value):
     return arg is None or arg == value
 
-def find_blue_bricks(host=None, name=None):
+def find_blue_marks(host=None, name=None):
     ret = []
     try:
         for h, n in bluetooth.discover_devices(lookup_names=True):

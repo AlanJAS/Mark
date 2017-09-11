@@ -18,10 +18,10 @@ class SerialSock(object):
     def close(self):
         self.device = None
 
-    def send(self, data):
+    def write(self, data):
         self.sock.write(data)
 
-    def recv(self):
+    def read(self):
         return self.sock.read()
         
 
