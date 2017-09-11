@@ -171,6 +171,11 @@ class MarkRobot(object):
         """
         return self.firmata_version
 
+    def get_name(self):
+        if self.sock:
+            return self.sock.name
+        return None
+
     def servo_config(self, pin, min_pulse=544, max_pulse=2400, angle=0):
         """
         Configure a pin as servo with min_pulse, max_pulse and first angle.

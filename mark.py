@@ -401,7 +401,7 @@ class Mark(Plugin):
         i = i - 1
         if (i < len(self._marks)) and (i >= 0):
             a = self._marks[i]
-            return a.name
+            return a.get_name()
         else:
             raise logoerror(_('Not found mark %s') % (i + 1))
 
