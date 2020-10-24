@@ -179,7 +179,7 @@ class Pin(object):
     def enable_reporting(self):
         """Set an input pin to report values."""
         if self.mode is not INPUT:
-            raise IOError, "%s is not an input and can therefore not report" % self
+            raise (IOError, "%s is not an input and can therefore not report" % self)
         if self.type == ANALOG:
             self.reporting = True
             msg = chr(REPORT_ANALOG + self.pin_number)
@@ -205,7 +205,7 @@ class Pin(object):
         0.0 to 1.0.
         """
         if self.mode == UNAVAILABLE:
-            raise IOError, "Cannot read pin %s"% self.__str__()
+            raise (IOError, "Cannot read pin %s"% self.__str__())
         return self.value
 
     def write(self, value):
@@ -218,9 +218,9 @@ class Pin(object):
 
         """
         if self.mode is UNAVAILABLE:
-            raise IOError, "%s can not be used through Firmata." % self
+            raise (IOError, "%s can not be used through Firmata." % self)
         if self.mode is INPUT:
-            raise IOError, "%s is set up as an INPUT and can therefore not be written to" % self
+            raise (IOError, "%s is set up as an INPUT and can therefore not be written to" % self)
         if value is not self.value:
             self.value = value
             if self.mode is OUTPUT:
@@ -262,7 +262,7 @@ def to_two_bytes(integer):
 
     """
     if integer > 32767:
-        raise ValueError, "Can't handle values bigger than 32767 (max for 2 bits)"
+        raise (ValueError, "Can't handle values bigger than 32767 (max for 2 bits)")
     return chr(integer % 128), chr(integer >> 7)
 
 def from_two_bytes(bytes):

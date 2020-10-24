@@ -1,6 +1,6 @@
 
 import serial
-import commands
+import subprocess
 from mark import MarkRobot
 
 class SerialSock(object):
@@ -33,10 +33,20 @@ class SerialSock(object):
 
 def find_serial_marks(host=None, name=None):
     ret = []
-    status,output_usb = commands.getstatusoutput("ls /dev/ | grep ttyUSB")
-    output_usb_parsed = output_usb.split('\n')
-    status,output_acm = commands.getstatusoutput("ls /dev/ | grep ttyACM")
-    output_acm_parsed = output_acm.split('\n')
+    output_usb_parsed = []
+    output_acm_parsed = []
+    try:
+        output_usb = subprocess.check_output('ls /dev/ | grep ttyUSB', shell=True)
+        output_usb = output_usb.decode()
+        output_usb_parsed = output_usb.split('\n')
+    except:
+        pass
+    try:
+        output_acm = subprocess.check_output('ls /dev/ | grep ttyACM', shell=True)
+        output_acm = output_acm.decode()
+        output_acm_parsed = output_acm.split('\n')
+    except:
+        pass
     output = output_usb_parsed
     output.extend(output_acm_parsed)
     for dev in output:

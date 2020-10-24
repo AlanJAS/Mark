@@ -1,5 +1,7 @@
-#!/usr/bin/env python
-# Copyright (c) 2017, Alan Aguiar <alanjas@hotmail.com>
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2017-2020, Alan Aguiar <alanjas@hotmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,6 +33,7 @@ from TurtleArt.taprimitive import Primitive, ArgSlot, ConstantArg
 from TurtleArt.tatype import TYPE_INT, TYPE_FLOAT, TYPE_STRING, TYPE_NUMBER, TYPE_BOOL
 
 sys.path.insert(0, os.path.abspath('./plugins/mark'))
+
 import markrobot
 
 MODE = {'INPUT': markrobot.INPUT, 'OUTPUT': markrobot.OUTPUT,
@@ -250,7 +253,7 @@ class Mark(Plugin):
             res = self.analogRead(pin)
         except:
             pass
-        if (res <> -1) and (res <> None):
+        if not(res == -1) and not(res == None):
             return int(res * 100)
         return res
 
@@ -329,13 +332,13 @@ class Mark(Plugin):
             # check mode pwm and set the power
             actual_mode = a.digital[pin_p]._get_mode()
             new_mode = MODE['PWM']
-            if actual_mode <> new_mode:
+            if not(actual_mode == new_mode):
                 a.digital[pin_p]._set_mode(new_mode)
             a.digital[pin_p].write(power)
             # check mode output and set the sense
             actual_mode = a.digital[pin_s]._get_mode()
             new_mode = MODE['OUTPUT']
-            if actual_mode <> new_mode:
+            if not(actual_mode == new_mode):
                 a.digital[pin_s]._set_mode(new_mode)
             a.digital[pin_s].write(sense)
         except:
@@ -356,7 +359,7 @@ class Mark(Plugin):
             a = self._marks[self.active_mark]
             actual_mode = a.digital[pin]._get_mode()
             new_mode = MODE['SERVO']
-            if actual_mode <> new_mode:
+            if not(actual_mode == new_mode):
                 a.digital[pin]._set_mode(new_mode)
             a.digital[pin].write(angle)
         except:
