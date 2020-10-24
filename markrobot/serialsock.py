@@ -1,7 +1,7 @@
 
 import serial
 import subprocess
-from mark import MarkRobot
+from .mark import MarkRobot
 
 class SerialSock(object):
 

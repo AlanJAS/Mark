@@ -2,7 +2,7 @@
 import inspect
 import time
 import itertools
-from util import *
+from .util import *
 
 
 

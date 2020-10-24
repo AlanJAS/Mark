@@ -4,7 +4,7 @@ try:
 except:
     pass
 
-from mark import MarkRobot
+from .mark import MarkRobot
 
 class BlueSock(object):
 
